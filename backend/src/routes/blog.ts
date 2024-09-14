@@ -101,7 +101,8 @@ blogRouter.post("/", async (c) => {
   }
 });
 
-blogRouter.put("/", async (c) => {
+blogRouter.put("/:id", async (c) => {
+  const id = c.req.param("id");
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
@@ -117,7 +118,7 @@ blogRouter.put("/", async (c) => {
   try {
     const updatedBlog = await prisma.post.update({
       where: {
-        id: body.id,
+        id: id,
         authorId: userId,
       },
       data: {

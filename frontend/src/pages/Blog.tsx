@@ -2,22 +2,18 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { UpdateBlog } from "../components/updateBlog"; // Import the UpdateBlog component
 
 export const BlogPage = () => {
-  // State for storing blogs and form data
   const [blogs, setBlogs] = useState([]);
-  const [formData, setFormData] = useState({
-    title: "",
-    content: "",
-  });
+  const [formData, setFormData] = useState({ title: "", content: "" });
   const [loading, setLoading] = useState(false);
+  const [selectedBlogId, setSelectedBlogId] = useState<string | null>(null);
 
-  // Fetch blogs on component mount
   useEffect(() => {
     fetchBlogs();
   }, []);
 
-  // Function to fetch user blogs from the backend
   const fetchBlogs = async () => {
     const jwt = localStorage.getItem("jwt");
     if (!jwt) {
@@ -37,11 +33,10 @@ export const BlogPage = () => {
         console.error("Unexpected response format:", response.data);
       }
     } catch (error: any) {
-        console.error("Error fetching blogs:", error.response ? error.response.data : error.message);
+      console.error("Error fetching blogs:", error.response ? error.response.data : error.message);
     }
   };
 
-  // Generalized handler for form inputs
   const handleInputChange = (event: any) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({
@@ -50,12 +45,6 @@ export const BlogPage = () => {
     }));
   };
 
-  interface Blog {
-    title: string,
-    content: string
-  }
-
-  // Handle blog creation
   const handleCreateBlog = async () => {
     const jwt = localStorage.getItem("jwt");
     if (!jwt) {
@@ -70,18 +59,18 @@ export const BlogPage = () => {
   
     setLoading(true);
     try {
-      const response = await axios.post(
+      await axios.post(
         'https://backend.beerappabharathb.workers.dev/api/v1/blog',
         formData,
         {
           headers: {
-            Authorization: `Bearer ${jwt}`,  // Attach JWT token in Authorization header
+            Authorization: `Bearer ${jwt}`,
           },
         }
       );
       toast.success("Blog created successfully!");
       setFormData({ title: "", content: "" });
-      fetchBlogs();  // Refresh the list after creation
+      fetchBlogs();
     } catch (error) {
       toast.error("Failed to create blog.");
       console.error("Error creating blog:", error);
@@ -90,12 +79,19 @@ export const BlogPage = () => {
     }
   };
 
+  const handleUpdateClick = (blogId: string) => {
+    setSelectedBlogId(blogId);
+  };
+
+  const closeUpdateDialog = () => {
+    setSelectedBlogId(null);
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-white p-10">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-teal-400 mb-10 text-center">User Blogs</h1>
 
-        {/* Show the create blog form */}
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-10">
           <h2 className="text-2xl font-bold mb-6">Create a New Blog</h2>
 
@@ -128,7 +124,6 @@ export const BlogPage = () => {
           </button>
         </div>
 
-        {/* Blog List */}
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold mb-6">Your Blogs</h2>
 
@@ -149,9 +144,9 @@ export const BlogPage = () => {
                   </p>
                   <button
                     className="mt-4 text-teal-400 hover:underline"
-                    onClick={() => alert(`Blog ID: ${blog.id}`)}
+                    onClick={() => handleUpdateClick(blog.id)}
                   >
-                    Read More
+                    Update
                   </button>
                 </div>
               ))
@@ -161,7 +156,11 @@ export const BlogPage = () => {
           </div>
         </div>
 
-        {/* Toast Container */}
+        {/* Render UpdateBlog component */}
+        {selectedBlogId && (
+          <UpdateBlog blogId={selectedBlogId} onClose={closeUpdateDialog} fetch = { fetchBlogs } />
+        )}
+
         <ToastContainer />
       </div>
     </div>

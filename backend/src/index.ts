@@ -22,7 +22,7 @@ const app = new Hono<{
 
 app.use(cors({
   origin: 'http://localhost:5173', // Frontend's origin
-  allowMethods: ['GET', 'POST', 'OPTIONS'], // Methods allowed
+  allowMethods: ['GET', 'POST', 'OPTIONS' , 'PUT' , 'DELETE'], // Methods allowed
   allowHeaders: ['Content-Type', 'Authorization'], // Headers allowed
   maxAge: 600, // Cache preflight response for 10 minutes
 }));
