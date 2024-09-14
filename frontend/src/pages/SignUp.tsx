@@ -45,7 +45,7 @@ export const SignUp = () => {
       });
 
       // Redirect to blog page after 3 seconds
-      navigate("/blog");
+      navigate("/signin");
     } catch (error) {
       console.error("Signup failed", error);
 
