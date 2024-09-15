@@ -9,7 +9,7 @@ const LandingPage: React.FC = () => {
                     <h1 className="text-5xl font-extrabold">Welcome to MyBlog</h1>
                     <p className="mt-4 text-xl">Your go-to platform for insightful and engaging content.</p>
                     <div className="mt-6 flex justify-center">
-                        <a href="#features" className="bg-white text-blue-800 px-6 py-3 rounded-md text-lg font-medium hover:bg-gray-100">Explore Features after signing up</a>
+                        <a href="" className="bg-white text-blue-800 px-6 py-3 rounded-md text-lg font-medium hover:bg-gray-100">Explore Features after signing up</a>
                     </div>
                 </div>
             </section>

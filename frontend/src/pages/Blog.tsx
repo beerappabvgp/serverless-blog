@@ -1,7 +1,9 @@
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import 'react-quill/dist/quill.snow.css'; // Quill CSS import
+import ReactQuill from "react-quill"; // Quill import
 import { UpdateBlog } from "../components/updateBlog"; // Import the UpdateBlog component
 
 export const BlogPage = () => {
@@ -35,6 +37,14 @@ export const BlogPage = () => {
     } catch (error: any) {
       console.error("Error fetching blogs:", error.response ? error.response.data : error.message);
     }
+  };
+
+  // Quill handles content changes
+  const handleQuillChange = (value: string) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      content: value,
+    }));
   };
 
   const handleInputChange = (event: any) => {
@@ -80,42 +90,51 @@ export const BlogPage = () => {
   };
 
   const handleUpdateClick = (blogId: string) => {
+    console.log('Blog ID:', blogId); // Debugging: Check if blogId is correctly passed
     setSelectedBlogId(blogId);
   };
+  
 
   const closeUpdateDialog = () => {
     setSelectedBlogId(null);
   };
+  
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-10">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <h1 className="text-4xl font-bold text-teal-400 mb-10 text-center">User Blogs</h1>
 
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-10">
+        {/* Blog creation section */}
+        <div className="bg-gray-800 p-8 rounded-lg shadow-lg mb-10">
           <h2 className="text-2xl font-bold mb-6">Create a New Blog</h2>
 
+          {/* Title input */}
           <input
             type="text"
             name="title"
             value={formData.title}
             onChange={handleInputChange}
             placeholder="Blog Title"
-            className="p-4 mb-4 w-full text-black font-semibold rounded-lg border-2 border-gray-700"
+            className="p-4 mb-6 w-full text-black font-semibold rounded-lg border-2 border-gray-700 focus:outline-none"
           />
 
-          <textarea
-            name="content"
-            value={formData.content}
-            onChange={handleInputChange}
-            placeholder="Blog Content"
-            rows={6}
-            className="p-4 mb-4 w-full text-black font-semibold rounded-lg border-2 border-gray-700"
-          ></textarea>
+          {/* Quill editor for content */}
+          <div className="mb-6">
+            <ReactQuill
+              value={formData.content}
+              onChange={handleQuillChange}
+              placeholder="Write your blog content here..."
+              className="text-black"
+              theme="snow"
+              style={{ height: '300px', backgroundColor: 'white', color: 'black' }} // Increased height for better visibility
+            />
+          </div>
 
+          {/* Create blog button */}
           <button
             onClick={handleCreateBlog}
-            className={`w-full py-3 px-4 bg-teal-400 rounded-lg text-black font-bold hover:bg-teal-500 transition-all ${
+            className={`w-full py-3 px-4 bg-teal-400 rounded-lg text-black font-bold hover:bg-teal-500 transition-all focus:outline-none ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={loading}
@@ -124,10 +143,11 @@ export const BlogPage = () => {
           </button>
         </div>
 
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+        {/* Blog listing */}
+        <div className="bg-gray-800 p-8 rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold mb-6">Your Blogs</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {blogs && blogs.length > 0 ? (
               blogs.map((blog: any) => (
                 <div
@@ -137,13 +157,15 @@ export const BlogPage = () => {
                   <h3 className="text-xl font-bold mb-2 text-teal-400">
                     {blog.title}
                   </h3>
-                  <p className="text-gray-300">
-                    {blog.content.length > 100
-                      ? `${blog.content.slice(0, 100)}...`
-                      : blog.content}
-                  </p>
+                  
+                  {/* Render HTML content safely */}
+                  <div
+                    className="text-gray-300"
+                    dangerouslySetInnerHTML={{ __html: blog.content.length > 100 ? `${blog.content.slice(0, 100)}...` : blog.content }}
+                  />
+
                   <button
-                    className="mt-4 text-teal-400 hover:underline"
+                    className="mt-4 text-teal-400 hover:underline focus:outline-none"
                     onClick={() => handleUpdateClick(blog.id)}
                   >
                     Update
@@ -158,9 +180,8 @@ export const BlogPage = () => {
 
         {/* Render UpdateBlog component */}
         {selectedBlogId && (
-          <UpdateBlog blogId={selectedBlogId} onClose={closeUpdateDialog} fetch = { fetchBlogs } />
+          <UpdateBlog blogId={selectedBlogId} onClose={closeUpdateDialog} fetch={fetchBlogs} />
         )}
-
         <ToastContainer />
       </div>
     </div>

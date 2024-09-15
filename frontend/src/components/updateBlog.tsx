@@ -18,9 +18,10 @@ export const UpdateBlog = ({ blogId, onClose , fetch }: UpdateBlogProps) => {
     const fetchBlogDetails = async () => {
       const jwt = localStorage.getItem("jwt");
       if (!jwt) {
-        console.error("JWT not found");
+        toast.error("JWT not found");
         return;
       }
+
       try {
         const response = await axios.get(
           `https://backend.beerappabharathb.workers.dev/api/v1/blog/${blogId}`,
@@ -30,8 +31,12 @@ export const UpdateBlog = ({ blogId, onClose , fetch }: UpdateBlogProps) => {
             },
           }
         );
-        setFormData(response.data);
+        
+        // Ensure default values if data is undefined
+        const { title = "", content = "" } = response.data || {};
+        setFormData({ title, content });
       } catch (error) {
+        toast.error("Error fetching blog details.");
         console.error("Error fetching blog details:", error);
       }
     };
@@ -54,6 +59,7 @@ export const UpdateBlog = ({ blogId, onClose , fetch }: UpdateBlogProps) => {
       return;
     }
 
+    // Ensure both fields have values before making the request
     if (!formData.title || !formData.content) {
       toast.error("Title and content are required!");
       return;

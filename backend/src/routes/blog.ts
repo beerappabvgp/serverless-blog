@@ -44,8 +44,20 @@ blogRouter.get("/bulk", async (c) => {
     return c.json({ error: "User ID is required" }, { status: 400 });
   }
   const posts = await prisma.post.findMany({
-    where: { authorId: userId }
-  });
+    where: { authorId: userId },
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      published: true,
+      createdAt: true, // Include the created_at field
+      author: {
+        select: {
+          name: true, // Fetch the author's name
+        },
+      },
+    },
+  });  
   console.log(posts);
   return c.json({ posts });
 });
