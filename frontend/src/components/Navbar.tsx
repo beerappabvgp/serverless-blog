@@ -1,12 +1,12 @@
 // src/components/Navbar.tsx
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar: React.FC = () => {
     const { isLoggedIn } = useAuth();
-    const location = useLocation();
-    const isLandingPage = location.pathname === '/';
+    // const location = useLocation();
+    // const isLandingPage = location.pathname === '/';
     console.log(isLoggedIn);
     return (
         <nav className="bg-blue-800 text-white shadow-md">
